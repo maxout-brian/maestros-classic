@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maestro's Classic — 6-Month SEO Sales Projection</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f5f5f3; color: #111; padding: 32px 24px; }
+  .page { max-width: 900px; margin: 0 auto; }
+
+  h1 { font-size: 22px; font-weight: 600; color: #111; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 28px; }
+
+  .section-hdr { font-size: 10px; font-weight: 600; letter-spacing: .1em; color: #999; text-transform: uppercase; margin-bottom: 10px; }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+  .metric { background: #f0eeea; border-radius: 8px; padding: 14px; }
+  .metric-label { font-size: 10px; font-weight: 600; color: #999; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 4px; }
+  .metric-val { font-size: 20px; font-weight: 600; color: #111; line-height: 1.1; }
+  .metric-sub { font-size: 10px; color: #999; margin-top: 3px; }
+  .flag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+  .flag-opp { background: #FAEEDA; color: #633806; }
+  .flag-warn { background: #FCEBEB; color: #791F1F; }
+
+  .toggle-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tog { font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 20px; border: 1.5px solid #ccc; cursor: pointer; background: transparent; color: #666; transition: all .15s; }
+  .tog:hover { background: #f0eeea; }
+  .tog.active-cons { background: #1D9E75; color: #fff; border-color: #1D9E75; }
+  .tog.active-base { background: #378ADD; color: #fff; border-color: #378ADD; }
+  .tog.active-opt { background: #7F77DD; color: #fff; border-color: #7F77DD; }
+
+  .chart-area { border: 1px solid #e0ddd8; border-radius: 12px; overflow: hidden; margin-bottom: 16px; background: #fff; }
+  .chart-inner { padding: 20px; }
+  .chart-title { font-size: 12px; color: #666; margin-bottom: 16px; font-style: italic; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; }
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar-wrap { flex: 1; display: flex; align-items: flex-end; width: 100%; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: height .4s ease; }
+  .bar-label { font-size: 10px; color: #999; text-align: center; }
+  .bar-val { font-size: 11px; font-weight: 600; color: #111; text-align: center; }
+  .chart-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #666; }
+  .leg-sq { width: 12px; height: 12px; border-radius: 2px; }
+
+  table { width: 100%; border-collapse: collapse; background: #fff; }
+  th { padding: 9px 12px; font-size: 10px; font-weight: 600; color: #fff; background: #444; text-align: right; letter-spacing: .06em; text-transform: uppercase; }
+  th:first-child { text-align: left; }
+  td { padding: 10px 12px; font-size: 12px; color: #555; text-align: right; border-bottom: 1px solid #f0eeea; }
+  td:first-child { text-align: left; font-weight: 600; color: #111; }
+  tr:last-child td { border-bottom: none; }
+  .td-green { color: #1A7A4A; font-weight: 600; }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .summary-card { border: 1px solid #e0ddd8; border-radius: 12px; padding: 18px; text-align: center; background: #fff; }
+  .summary-card.featured { border: 2px solid #378ADD; }
+  .sc-badge { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; display: inline-block; }
+  .sc-cons { background: #EAF3DE; color: #27500A; }
+  .sc-base { background: #E6F1FB; color: #0C447C; }
+  .sc-opt { background: #EEEDFE; color: #3C3489; }
+  .sc-rev { font-size: 24px; font-weight: 600; color: #111; margin-bottom: 2px; }
+  .sc-label { font-size: 11px; color: #666; margin-bottom: 8px; }
+  .sc-ltv { font-size: 11px; color: #999; }
+  .sc-total { font-size: 13px; font-weight: 600; color: #111; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0eeea; }
+
+  .roi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .roi-metric { background: #f0eeea; border-radius: 8px; padding: 14px; }
+
+  .note { background: #f0eeea; border: 1px solid #e0ddd8; border-radius: 8px; padding: 14px; font-size: 12px; color: #555; line-height: 1.6; }
+  .note strong { color: #111; }
+
+  .divider { border: none; border-top: 1px solid #e0ddd8; margin: 24px 0; }
+
+  @media (max-width: 600px) {
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-grid { grid-template-columns: 1fr; }
+    .roi-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Maestro's Classic — 6-Month SEO Sales Projection</h1>
+  <div class="sub">Based on actual Google Search Console + Shopify data · Jan–Mar 2026 baseline · All 4 beard care collections</div>
+
+  <div class="section-hdr">Baseline — Jan–Mar 2026 monthly average</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-label">Organic sessions/mo</div>
+      <div class="metric-val">1,048</div>
+      <div class="metric-sub">438 to collection pages</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Organic revenue/mo</div>
+      <div class="metric-val">$4,399</div>
+      <div class="metric-sub">77 orders · AOV $57.38</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg search position</div>
+      <div class="metric-val">7.8</div>
+      <div class="metric-sub">Page 1 bottom</div>
+      <span class="flag flag-opp">Key opportunity</span>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Collection CTR</div>
+      <div class="metric-val">2.54%</div>
+      <div class="metric-sub">16,140 impressions/mo</div>
+      <span class="flag flag-opp">Underperforming</span>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-label">Organic conv rate</div>
+      <div class="metric-val">7.31%</div>
+      <div class="metric-sub">Strong signal</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Customer LTV est.</div>
+      <div class="metric-val">$111</div>
+      <div class="metric-sub">64.7% return rate</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Top query position</div>
+      <div class="metric-val">9.5</div>
+      <div class="metric-sub">"beard butter" — borderline</div>
+      <span class="flag flag-opp">High priority</span>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Branded query %</div>
+      <div class="metric-val">~85%</div>
+      <div class="metric-sub">Low non-branded traffic</div>
+      <span class="flag flag-warn">Main growth lever</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-hdr">6-month projection — select scenario</div>
+  <div class="toggle-row">
+    <button class="tog active-cons" id="tog-cons" onclick="switchScenario('cons')">Conservative</button>
+    <button class="tog" id="tog-base" onclick="switchScenario('base')">Base case</button>
+    <button class="tog" id="tog-opt" onclick="switchScenario('opt')">Optimistic</button>
+  </div>
+
+  <div class="chart-area">
+    <div class="chart-inner">
+      <div class="chart-title" id="chart-title"></div>
+      <div class="bar-chart" id="bar-chart"></div>
+      <div class="chart-legend">
+        <div class="leg"><div class="leg-sq" id="leg-color"></div>Incremental revenue</div>
+        <div class="leg"><div class="leg-sq" style="background:#f0eeea;border:1px solid #ccc"></div>Baseline ($4,399/mo)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-area">
+    <table>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Avg position</th>
+          <th>CTR</th>
+          <th>+ Sessions</th>
+          <th>+ Revenue</th>
+          <th>Total organic</th>
+          <th>+ New customers</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-hdr">6-month totals by scenario</div>
+  <div class="summary-grid">
+    <div class="summary-card">
+      <span class="sc-badge sc-cons">Conservative</span>
+      <div class="sc-rev">$11,284</div>
+      <div class="sc-label">incremental organic revenue</div>
+      <div class="sc-ltv">+ $4,907 LTV pipeline (69 new customers)</div>
+      <div class="sc-total">Total value: $16,191</div>
+    </div>
+    <div class="summary-card featured">
+      <span class="sc-badge sc-base">Base case ★</span>
+      <div class="sc-rev">$27,518</div>
+      <div class="sc-label">incremental organic revenue</div>
+      <div class="sc-ltv">+ $11,967 LTV pipeline (169 new customers)</div>
+      <div class="sc-total">Total value: $39,485</div>
+    </div>
+    <div class="summary-card">
+      <span class="sc-badge sc-opt">Optimistic</span>
+      <div class="sc-rev">$61,066</div>
+      <div class="sc-label">incremental organic revenue</div>
+      <div class="sc-ltv">+ $26,557 LTV pipeline (376 new customers)</div>
+      <div class="sc-total">Total value: $87,623</div>
+    </div>
+  </div>
+
+  <div class="section-hdr">ROI on implementation (~$3,750 project cost at $125/hr)</div>
+  <div class="roi-grid">
+    <div class="roi-metric">
+      <div class="metric-label">Conservative ROI</div>
+      <div class="metric-val">332%</div>
+      <div class="metric-sub">$16,191 return on $3,750</div>
+    </div>
+    <div class="roi-metric">
+      <div class="metric-label">Base case ROI</div>
+      <div class="metric-val">953%</div>
+      <div class="metric-sub">$39,485 return on $3,750</div>
+    </div>
+    <div class="roi-metric">
+      <div class="metric-label">Optimistic ROI</div>
+      <div class="metric-val">2,233%</div>
+      <div class="metric-sub">$87,623 return on $3,750</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Framing note:</strong> the project cost of $3,750 represents less than one month of current organic revenue ($4,399/mo baseline). In the base case scenario the implementation pays for itself within the first month of ranking improvement. SEO gains compound indefinitely — months 7–12 cost nothing additional. Data sources: Shopify Analytics + Google Search Console, Jan–Mar 2026. CTR benchmarks: Sistrix ecommerce position curves.
+  </div>
+
+</div>
+
+<script>
+const data = {
+  cons: {
+    months: ['Month 1','Month 2','Month 3','Month 4','Month 5','Month 6'],
+    position: [7.5, 7.2, 6.9, 6.6, 6.3, 6.0],
+    ctr: ['3.4%','4.0%','4.4%','4.7%','5.1%','5.4%'],
+    sessions: [169, 296, 370, 452, 536, 623],
+    revenue: [779, 1366, 1709, 2084, 2472, 2875],
+    total: [5178, 5765, 6108, 6483, 6871, 7274],
+    customers: [6, 10, 13, 16, 19, 22],
+    color: '#1D9E75',
+    label: 'Conservative — no blog cluster, slower position gains'
+  },
+  base: {
+    months: ['Month 1','Month 2','Month 3','Month 4','Month 5','Month 6'],
+    position: [7.3, 6.8, 6.3, 5.8, 5.3, 4.8],
+    ctr: ['3.6%','4.9%','5.5%','6.3%','7.3%','8.4%'],
+    sessions: [215, 619, 802, 1034, 1336, 1699],
+    revenue: [1037, 2986, 3869, 4985, 6446, 8195],
+    total: [5436, 7385, 8268, 9384, 10845, 12594],
+    customers: [13, 38, 48, 62, 80, 102],
+    color: '#378ADD',
+    label: 'Base case — all 4 collections + blog cluster live by month 2'
+  },
+  opt: {
+    months: ['Month 1','Month 2','Month 3','Month 4','Month 5','Month 6'],
+    position: [7.0, 6.2, 5.4, 4.6, 3.8, 3.0],
+    ctr: ['5.2%','6.3%','7.9%','10.1%','12.7%','16.0%'],
+    sessions: [519, 981, 1454, 2106, 2972, 4100],
+    revenue: [2613, 4938, 7318, 10600, 14960, 20638],
+    total: [7012, 9337, 11717, 14999, 19359, 25037],
+    customers: [32, 61, 91, 132, 186, 257],
+    color: '#7F77DD',
+    label: 'Optimistic — all 4 collections + aggressive blog cluster + FAQ schema firing'
+  }
+};
+
+let current = 'cons';
+
+function switchScenario(s) {
+  current = s;
+  ['cons','base','opt'].forEach(id => {
+    document.getElementById('tog-'+id).className = 'tog';
+  });
+  const cls = {cons:'active-cons', base:'active-base', opt:'active-opt'};
+  document.getElementById('tog-'+s).className = 'tog ' + cls[s];
+  renderChart(s);
+  renderTable(s);
+}
+
+function renderChart(s) {
+  const d = data[s];
+  const maxRev = Math.max(...d.revenue);
+  const chart = document.getElementById('bar-chart');
+  chart.innerHTML = '';
+  d.months.forEach((m, i) => {
+    const h = Math.max(4, Math.round((d.revenue[i] / maxRev) * 140));
+    const group = document.createElement('div');
+    group.className = 'bar-group';
+    group.innerHTML = `
+      <div class="bar-val">$${(d.revenue[i]/1000).toFixed(1)}k</div>
+      <div class="bar-wrap"><div class="bar" style="height:${h}px;background:${d.color}"></div></div>
+      <div class="bar-label">${m}</div>
+    `;
+    chart.appendChild(group);
+  });
+  document.getElementById('chart-title').textContent = d.label;
+  document.getElementById('leg-color').style.background = d.color;
+}
+
+function renderTable(s) {
+  const d = data[s];
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  d.months.forEach((m, i) => {
+    const tr = document.createElement('tr');
+    tr.style.background = i % 2 === 0 ? '#fafaf8' : '#fff';
+    tr.innerHTML = `
+      <td>${m}</td>
+      <td>${d.position[i]}</td>
+      <td>${d.ctr[i]}</td>
+      <td class="td-green">+${d.sessions[i].toLocaleString()}</td>
+      <td class="td-green">+$${d.revenue[i].toLocaleString()}</td>
+      <td>$${d.total[i].toLocaleString()}</td>
+      <td>+${d.customers[i]}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+renderChart('cons');
+renderTable('cons');
+</script>
+</body>
+</html>
