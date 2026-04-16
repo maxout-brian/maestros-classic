@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection Page Audit — Maestro's Classic</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f7f4ef;
+    --cream: #ede9e1;
+    --mid: #8a8478;
+    --rule: #d4cfc6;
+    --accent: #2c2c2a;
+    --gold: #b8935a;
+    --pass: #1a6b3a;
+    --pass-bg: #e6f4ec;
+    --fail: #8b1a1a;
+    --fail-bg: #fdf0f0;
+    --warn: #7a4a10;
+    --warn-bg: #fef6e7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+  .top-rule { width: 100%; height: 3px; background: var(--ink); }
+
+  header { padding: 40px 60px 32px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--rule); }
+  .brand-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--mid); display: block; margin-bottom: 4px; }
+  .brand-name { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--ink); }
+  .back-link { font-size: 12px; color: var(--mid); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .2s; }
+  .back-link:hover { color: var(--ink); }
+
+  .hero { padding: 48px 60px 40px; border-bottom: 1px solid var(--rule); }
+  .hero-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--mid); margin-bottom: 12px; }
+  .hero-headline { font-family: 'DM Serif Display', serif; font-size: 44px; line-height: 1.1; color: var(--ink); margin-bottom: 16px; }
+  .hero-headline em { font-style: italic; color: var(--gold); }
+  .hero-sub { font-size: 15px; color: var(--mid); line-height: 1.6; max-width: 560px; }
+
+  /* Score strip */
+  .score-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 0 60px; }
+  .score-cell { background: var(--paper); padding: 20px 20px 16px; }
+  .score-label { font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+  .score-val { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1; margin-bottom: 4px; }
+  .score-sub { font-size: 11px; color: var(--mid); }
+  .s-pass { color: var(--pass); }
+  .s-fail { color: var(--fail); }
+  .s-warn { color: var(--warn); }
+
+  main { padding: 0 60px 80px; flex: 1; }
+
+  /* Collection tabs */
+  .tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-top: 40px; overflow-x: auto; }
+  .tab { font-size: 12px; font-weight: 500; padding: 12px 20px; cursor: pointer; color: var(--mid); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all .2s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Section headers */
+  .section-hdr { display: flex; align-items: center; gap: 16px; padding: 32px 0 16px; }
+  .section-hdr-label { font-size: 10px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--mid); white-space: nowrap; }
+  .section-hdr-rule { flex: 1; height: 1px; background: var(--rule); }
+
+  /* Audit rows */
+  .audit-list { border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+  .audit-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 0; align-items: stretch; border-bottom: 1px solid var(--rule); }
+  .audit-row:last-child { border-bottom: none; }
+  .audit-icon { display: flex; align-items: center; justify-content: center; padding: 14px 8px; font-size: 13px; border-right: 1px solid var(--rule); background: var(--cream); }
+  .audit-body { padding: 14px 16px; }
+  .audit-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .audit-note { font-size: 12px; color: var(--mid); line-height: 1.5; }
+  .audit-badge { display: flex; align-items: center; padding: 0 14px; }
+  .badge { font-size: 9px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+  .b-pass { background: var(--pass-bg); color: var(--pass); }
+  .b-fail { background: var(--fail-bg); color: var(--fail); }
+  .b-warn { background: var(--warn-bg); color: var(--warn); }
+  .b-na { background: var(--cream); color: var(--mid); }
+
+  .row-pass .audit-icon { color: var(--pass); }
+  .row-fail .audit-icon { color: var(--fail); }
+  .row-warn .audit-icon { color: var(--warn); }
+  .row-pass { background: #fdfdfb; }
+  .row-fail { background: #fffafa; }
+  .row-warn { background: #fffdf8; }
+
+  /* Priority fixes */
+  .fix-list { border: 1px solid var(--rule); overflow: hidden; border-radius: 2px; }
+  .fix-row { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; border-bottom: 1px solid var(--rule); }
+  .fix-row:last-child { border-bottom: none; }
+  .fix-num { display: flex; align-items: center; justify-content: center; padding: 16px 0; font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--gold); border-right: 1px solid var(--rule); background: var(--cream); }
+  .fix-body { padding: 14px 16px; }
+  .fix-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .fix-desc { font-size: 12px; color: var(--mid); line-height: 1.5; }
+  .fix-effort { padding: 0 16px; }
+  .effort { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .e-fast { background: var(--pass-bg); color: var(--pass); }
+  .e-med { background: var(--warn-bg); color: var(--warn); }
+  .e-high { background: var(--fail-bg); color: var(--fail); }
+
+  footer { border-top: 1px solid var(--rule); padding: 20px 60px; display: flex; align-items: center; justify-content: space-between; }
+  .footer-note { font-size: 12px; color: var(--mid); }
+  .bottom-rule { width: 100%; height: 3px; background: var(--ink); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .hero { animation: fadeUp .5s ease both; }
+  .score-strip { animation: fadeUp .5s .1s ease both; }
+
+  @media (max-width: 900px) {
+    header, .hero, main, footer { padding-left: 20px; padding-right: 20px; }
+    .score-strip { margin-left: 20px; margin-right: 20px; grid-template-columns: repeat(3, 1fr); }
+    .hero-headline { font-size: 32px; }
+    .audit-row { grid-template-columns: 24px 1fr; }
+    .audit-badge { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="top-rule"></div>
+
+<header>
+  <div>
+    <span class="brand-eyebrow">Maestro's Classic · Client Portal</span>
+    <div class="brand-name">Collection Page Audit</div>
+  </div>
+  <a class="back-link" href="index.html">← Back to portal</a>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">SEO & Conversion Audit · April 2026</div>
+  <h1 class="hero-headline">5 collections.<br><em>One standard.</em></h1>
+  <p class="hero-sub">Every beard care collection page audited against pillar page criteria — SEO signals, content completeness, internal linking, and conversion readiness.</p>
+</section>
+
+<div class="score-strip">
+  <div class="score-cell">
+    <div class="score-label">Collections audited</div>
+    <div class="score-val" style="color:var(--ink)">5</div>
+    <div class="score-sub">Beard butter, wash, oil, recovery, blend sets</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Passed all checks</div>
+    <div class="score-val s-fail">0</div>
+    <div class="score-sub">All collections need work</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Critical fixes</div>
+    <div class="score-val s-fail">4</div>
+    <div class="score-sub">Across all collections</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Quick wins</div>
+    <div class="score-val s-warn">6</div>
+    <div class="score-sub">Under 30 min each</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Buildout status</div>
+    <div class="score-val s-warn">In progress</div>
+    <div class="score-sub">April 2026</div>
+  </div>
+</div>
+
+<main>
+  <div class="section-hdr" style="padding-top:32px">
+    <span class="section-hdr-label">Select collection</span>
+    <div class="section-hdr-rule"></div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab('bb', this)">Beard Butter</button>
+    <button class="tab" onclick="switchTab('bw', this)">Beard Wash</button>
+    <button class="tab" onclick="switchTab('bo', this)">Beard Oil</button>
+    <button class="tab" onclick="switchTab('br', this)">Beard Recovery</button>
+    <button class="tab" onclick="switchTab('bs', this)">Blend Sets</button>
+  </div>
+
+  <!-- BEARD BUTTER -->
+  <div class="panel active" id="panel-bb">
+    <div class="section-hdr">
+      <span class="section-hdr-label">SEO signals</span>
+      <div class="section-hdr-rule"></div>
+    </div>
+    <div class="audit-list">
+      <div class="audit-row row-pass">
+        <div class="audit-icon">✓</div>
+        <div class="audit-body"><div class="audit-title">Meta title includes "beard butter"</div><div class="audit-note">"Beard Butter for Men | Premium Beard Conditioning" — well structured</div></div>
+        <div class="audit-badge"><span class="badge b-pass">Pass</span></div>
+      </div>
+      <div class="audit-row row-fail">
+        <div class="audit-icon">✗</div>
+        <div class="audit-body"><div class="audit-title">H1 tag present and keyword-relevant</div><div class="audit-note">No visible H1 on the collection page — significant ranking signal Google is not receiving. Add manually in theme editor.</div></div>
+        <div class="audit-badge"><span class="badge b-fail">Fix needed</span></div>
+      </div>
+      <div class="audit-row row-warn">
+        <div class="audit-icon">!</div>
+        <div class="audit-body"><div class="audit-title">Collection description 400–600 words</div><div class="audit-note">Current description is ~150 words and placed below the product grid. Too thin for pillar page authority.</div></div>
+        <div class="audit-badge"><span class="badge b-warn">Too short</span></div>
+      </div>
+      <div class="audit-row row-fail">
+        <div class="audit-icon">✗</div>
+        <div class="audit-body"><div class="audit-title">No copy-paste errors in FAQ answers</div><div class="audit-note">Critical: "What is beard butter used for?" currently answers with beard WASH copy. Wrong product content actively hurting trust and SEO.</div></div>
+        <div class="audit-badge"><span class="badge b-fail">Urgent fix</span></div>
+      </div>
+      <div class="audit-row row-warn">
+        <div class="audit-icon">!</div>
+        <div class="audit-body"><div class="audit-title">FAQ section with 5+ questions</div><div class="audit-note">6 questions present — good foundation. Needs expansion to 12 for full schema coverage. One answer has copy error (see above).</div></div>
+        <div class="audit-badge"><span class="badge b-warn">Expand to 12</span></div>
+      </div>
+      <div class="audit-row row-fail">
+        <div class="audit-icon">✗</div>
+        <div class="audit-body"><div class="audit-title">Internal links to blog cluster articles</div><div class="audit-note">No editorial links anywhere on the page. A pillar page must link outward to cluster articles to signal topical authority.</div></div>
+        <div class="audit-badge"><span class="badge b-fail">Missing</span></div>
+      </div>
+      <div class="audit-row row-fail">
+        <div class="audit-icon">✗</div>
+        <div class="audit-body"><div class="audit-title">Comparison/education content present</div><div class="audit-note">Missing: beard butter vs beard oil, beard type guidance, who it's for. Content Google expects from a category authority page.</div></div>
+        <div class="audit-badge"><span class="badge b-fail">Missing</span></div>
+      </div>
+      <div class="audit-row row-warn">
+        <div class="audit-icon">!</div>
+        <div class="audit-body"><div class="audit-title">No over-claims ("permanently")</div><div class="audit-note">"Eliminates beard itch and flakiness permanently" appears in both collection and product page copy. Replace with "helps reduce" or "relieves."</div></div>
+        <div class="audit-badge"><span class="badge b-warn">Claim risk</span></div>
+      </div>
+    </div>
+
+    <div class="section-hdr">
+      <span class="section-hdr-label">Linking & conversion</span>
+      <div class="section-hdr-rule"></div>
+    </div>
+    <div class="audit-list">
+      <div class="audit-row row-fail">
+        <div class="audit-icon">✗</div>
+        <div class="audit-body"><div class="audit-title">Product pages link back to collection</div><div class="audit-note">Product pages are islands — no links back up to the collection page or out to blog content.</div></div>
+        <div class="audit-badge"><span class="badge b-fail">Missing</span></div>
+      </div>
+      <div class="audit-row row-pass">
+        <div class="audit-icon">✓</div>
+        <div class="audit-body"><div class="audit-title">No orphaned products</div><div class="audit-note">All 3 products (Mark of a Man, Speakeasy, Unscented) are accessible from the collection grid.</div></div>
+        <div class="audit-badge"><span class="badge b-pass">Pass</span></div>
+      </div>
+      <div class="audit-row row-pass">
+        <div class="audit-icon">✓</div>
+        <div class="audit-body"><div class="audit-title">Reviews present with strong social proof</div><div class="audit-note">142 reviews on Mark of a Man (4.99 avg), 133 on Speakeasy, 27 on Unscented. Strong UGC keyword signal.</div></div>
+        <div class="audit-badge"><span class="badge b-pass">Pass</span></div>
+      </div>
+      <div class="audit-row row-fail">
+        <div class="audit-icon">✗</div>
+        <div class="audit-body"><div class="audit-title">Cross-sell / upsell on collection page</div><div class="audit-note">No bundle or routine upsell visible on the collection page itself. Product pages have "Buy It With" — collection page does not.</div></div>
+        <div class="audit-badge"><span class="badge b-fail">Missing</span></div>
+      </div>
+    </div>
+
+    <div class="section-hdr">
+      <span class="section-hdr-label">Priority fixes — beard butter</span>
+      <div class="section-hdr-rule"></div>
+    </div>
+    <div class="fix-list">
+      <div class="fix-row">
+        <div class="fix-num">1</div>
+        <div class="fix-body"><div class="fix-title">Fix FAQ copy-paste error immediately</div><div class="fix-desc">The beard butter FAQ answers "What is beard butter?" with beard wash copy. Fix this before anything else — it's actively wrong.</div></div>
+        <div class="fix-effort"><span class="effort e-fast">5 min</span></div>
+      </div>
+      <div class="fix-row">
+        <div class="fix-num">2</div>
+        <div class="fix-body"><div class="fix-title">Add H1 in theme editor</div><div class="fix-desc">Add "Beard Butter for Men" as a proper H1 heading at the top of the collection page via the theme section editor.</div></div>
+        <div class="fix-effort"><span class="effort e-fast">15 min</span></div>
+      </div>
+      <div class="fix-row">
+        <div class="fix-num">3</div>
+        <div class="fix-body"><div class="fix-title">Remove "permanently" from all copy</div><div class="fix-desc">Replace every instance of "permanently" in collection and product page copy with "helps reduce" or "relieves."</div></div>
+        <div class="fix-effort"><span class="effort e-fast">20 min</span></div>
+      </div>
+      <div class="fix-row">
+        <div class="fix-num">4</div>
+        <div class="fix-body"><div class="fix-title">Expand collection description to 400–600 words</div><div class="fix-desc">Rewrite the description with H2 subheadings targeting long-tail queries. Include formula differentiator, beard type guidance, and comparison angle.</div></div>
+        <div class="fix-effort"><span class="effort e-med">2 hrs</span></div>
+      </div>
+      <div class="fix-row">
+        <div class="fix-num">5</div>
+        <div class="fix-body"><div class="fix-title">Expand FAQ to 12 questions + add schema</div><div class="fix-desc">Add q7–q12 to metaobject. Populate with questions targeting coarse beard, beardruff, beard type, jar size, water-based formula, sensitive skin.</div></div>
+        <div class="fix-effort"><span class="effort e-med">2 hrs</span></div>
+      </div>
+      <div class="fix-row">
+        <div class="fix-num">6</div>
+        <div class="fix-body"><div class="fix-title">Add comparison table + blog links section</div><div class="fix-desc">Deploy the butter vs oil vs conditioner comparison table. Link 2–4 cluster articles via the blog_articles metafield once articles are live.</div></div>
+        <div class="fix-effort"><span class="effort e-high">Buildout</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BEARD WASH -->
+  <div class="panel" id="panel-bw">
+    <div class="section-hdr"><span class="section-hdr-label">SEO signals</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Meta title includes "beard wash"</div><div class="audit-note">Needs audit — verify "beard wash" appears in meta title and is not just a generic product title.</div></div><div class="audit-badge"><span class="badge b-warn">Verify</span></div></div>
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">H1 tag present</div><div class="audit-note">Likely missing same as beard butter — theme does not auto-generate H1 on collection pages.</div></div><div class="audit-badge"><span class="badge b-warn">Likely missing</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">Collection description 400–600 words</div><div class="audit-note">Description needs full rewrite targeting "beard wash," "sulfate-free beard wash," "best beard wash for dry beard" and related queries.</div></div><div class="audit-badge"><span class="badge b-fail">Needs rewrite</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">FAQ section with 12 questions</div><div class="audit-note">FAQ metaobject not yet populated for beard wash collection. 12 questions to be written and entered.</div></div><div class="audit-badge"><span class="badge b-fail">Not started</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">Comparison/education content</div><div class="audit-note">Missing: beard wash vs regular shampoo, how often to wash, sulfate-free explanation, routine pairing with beard butter.</div></div><div class="audit-badge"><span class="badge b-fail">Missing</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">Internal links to blog cluster</div><div class="audit-note">No blog links section. Needs 2–4 articles about beard washing routine, beard care routine, how often to wash beard.</div></div><div class="audit-badge"><span class="badge b-fail">Missing</span></div></div>
+    </div>
+    <div class="section-hdr"><span class="section-hdr-label">Status</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Buildout in progress</div><div class="audit-note">Beard wash is next in the buildout sequence after beard butter. FAQ questions, tagline, comparison table, and description copy are being drafted.</div></div><div class="audit-badge"><span class="badge b-warn">Next up</span></div></div>
+    </div>
+  </div>
+
+  <!-- BEARD OIL -->
+  <div class="panel" id="panel-bo">
+    <div class="section-hdr"><span class="section-hdr-label">SEO signals</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Meta title includes "beard oil"</div><div class="audit-note">Needs audit — verify keyword is present and not diluted by product variant names.</div></div><div class="audit-badge"><span class="badge b-warn">Verify</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">FAQ section populated</div><div class="audit-note">FAQ metaobject not yet populated. 12 questions planned: what beard oil does, vs butter, how to apply, growth claims, sensitive skin, etc.</div></div><div class="audit-badge"><span class="badge b-fail">Not started</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">Comparison content present</div><div class="audit-note">Missing: beard oil vs beard butter, beard oil vs beard balm, when to use oil in routine, finishing step positioning.</div></div><div class="audit-badge"><span class="badge b-fail">Missing</span></div></div>
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Growth claim risk</div><div class="audit-note">Beard oil category frequently attracts growth claims. Verify all copy stays in cosmetic territory — "conditions," "nourishes," not "grows" or "stimulates."</div></div><div class="audit-badge"><span class="badge b-warn">Review copy</span></div></div>
+    </div>
+    <div class="section-hdr"><span class="section-hdr-label">Status</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Buildout planned — phase 3</div><div class="audit-note">Beard oil follows beard wash in the buildout sequence. FAQ questions drafted in master reference doc. Ready for content entry once wash is complete.</div></div><div class="audit-badge"><span class="badge b-warn">Planned</span></div></div>
+    </div>
+  </div>
+
+  <!-- BEARD RECOVERY -->
+  <div class="panel" id="panel-br">
+    <div class="section-hdr"><span class="section-hdr-label">SEO signals</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Category keyword clarity</div><div class="audit-note">"Beard recovery" is a branded category name. Needs supporting copy targeting "beard deep conditioner," "beard repair treatment," "weekly beard conditioner" to capture broader search.</div></div><div class="audit-badge"><span class="badge b-warn">Strategy needed</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">FAQ section populated</div><div class="audit-note">12 questions planned: what recovery is, rinse-out vs leave-in, how often to use, pairing with beard wash, peptide and protein ingredients story.</div></div><div class="audit-badge"><span class="badge b-fail">Not started</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">Comparison content present</div><div class="audit-note">Recovery vs butter, recovery vs conditioner, rinse-out vs leave-in positioning — none of this exists on the page currently.</div></div><div class="audit-badge"><span class="badge b-fail">Missing</span></div></div>
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Repair/treatment claim boundary</div><div class="audit-note">Cationic conditioners and peptides in the formula are strong — but "repair" and "recovery" language approaches drug-claim territory. Copy needs careful framing.</div></div><div class="audit-badge"><span class="badge b-warn">Monitor</span></div></div>
+    </div>
+    <div class="section-hdr"><span class="section-hdr-label">Status</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Buildout planned — phase 4</div><div class="audit-note">Most technically complex collection to write for. FAQ and description copy require the most care around claim boundaries given the formula's peptide and polymer story.</div></div><div class="audit-badge"><span class="badge b-warn">Planned</span></div></div>
+    </div>
+  </div>
+
+  <!-- BLEND SETS -->
+  <div class="panel" id="panel-bs">
+    <div class="section-hdr"><span class="section-hdr-label">SEO signals</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Multi-product keyword strategy</div><div class="audit-note">Blend Sets spans multiple product types. Meta title and H1 need to target gift/bundle intent: "beard care gift set," "beard grooming kit," "beard care bundle."</div></div><div class="audit-badge"><span class="badge b-warn">Different strategy</span></div></div>
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Separate template consideration</div><div class="audit-note">Blend Sets may need its own collection.blend-sets.json template with a simplified FAQ (6 questions) rather than inheriting the standard 12-question format.</div></div><div class="audit-badge"><span class="badge b-warn">Template decision</span></div></div>
+      <div class="audit-row row-fail"><div class="audit-icon">✗</div><div class="audit-body"><div class="audit-title">Gift buyer persona copy</div><div class="audit-note">The Gift Buyer persona (Buyer Betsy) is the primary audience for this collection. Current copy doesn't speak to gift purchase intent — occasion, recipient, confidence signals.</div></div><div class="audit-badge"><span class="badge b-fail">Wrong audience</span></div></div>
+      <div class="audit-row row-pass"><div class="audit-icon">✓</div><div class="audit-body"><div class="audit-title">Hardcoded metaobject removed</div><div class="audit-note">The hardcoded beard-wash reference in collection.blend-sets.json (metaobjects.collection_faqs["beard-wash"]) has been removed and replaced with the dynamic collection reference.</div></div><div class="audit-badge"><span class="badge b-pass">Fixed</span></div></div>
+    </div>
+    <div class="section-hdr"><span class="section-hdr-label">Status</span><div class="section-hdr-rule"></div></div>
+    <div class="audit-list">
+      <div class="audit-row row-warn"><div class="audit-icon">!</div><div class="audit-body"><div class="audit-title">Buildout planned — phase 5</div><div class="audit-note">Requires separate content strategy focused on gift intent. FAQ questions, description, and comparison content all need to be written for a gift buyer, not a self-purchaser.</div></div><div class="audit-badge"><span class="badge b-warn">Planned</span></div></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-note">Maestro's Classic · Collection Page Audit · April 2026</div>
+  <div class="footer-note">Updated as buildout progresses</div>
+</footer>
+<div class="bottom-rule"></div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+</script>
+</body>
+</html>
